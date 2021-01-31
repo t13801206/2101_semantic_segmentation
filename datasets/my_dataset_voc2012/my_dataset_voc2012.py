@@ -57,27 +57,28 @@ class MyDatasetVoc2012(tfds.core.GeneratorBasedBuilder):
 
     images_path_dir = os.path.join(paths["images"], "JPEGImages")
     annotations_path_dir = os.path.join(paths["annotations"], "SegmentationClass")
-    label_path_dir = os.path.join(paths["labels"], "ImageSets", "Segmentation")
+    label_path_dir = os.path.join(paths["labels"], "ImageSets", "Segmentation") # <-- all images
+    # label_path_dir = os.path.join(paths["labels"], "ImageSets", "Main") # <-- each category images
 
     # Setup train and test splits
-    train_split = tfds.core.SplitGenerator(
-        name="train",
-        # num_shards=_NUM_SHARDS,
-        gen_kwargs={
-            "images_dir_path": images_path_dir,
-            "annotations_dir_path": annotations_path_dir,
-            "images_list_file": os.path.join(label_path_dir, "train.txt"),
-            },
-        )
-    test_split = tfds.core.SplitGenerator(
-        name="test",
-        # num_shards=_NUM_SHARDS,
-        gen_kwargs={
-            "images_dir_path": images_path_dir,
-            "annotations_dir_path": annotations_path_dir,
-            "images_list_file": os.path.join(label_path_dir, "val.txt")
-            },
-        )
+    # train_split = tfds.core.SplitGenerator(
+    #     name="train",
+    #     # num_shards=_NUM_SHARDS,
+    #     gen_kwargs={
+    #         "images_dir_path": images_path_dir,
+    #         "annotations_dir_path": annotations_path_dir,
+    #         "images_list_file": os.path.join(label_path_dir, "train.txt"),
+    #         },
+    #     )
+    # test_split = tfds.core.SplitGenerator(
+    #     name="test",
+    #     # num_shards=_NUM_SHARDS,
+    #     gen_kwargs={
+    #         "images_dir_path": images_path_dir,
+    #         "annotations_dir_path": annotations_path_dir,
+    #         "images_list_file": os.path.join(label_path_dir, "val.txt")
+    #         },
+    #     )
 
     # return [train_split, test_split]
     return {
@@ -97,13 +98,15 @@ class MyDatasetVoc2012(tfds.core.GeneratorBasedBuilder):
     with tf.io.gfile.GFile(images_list_file, "r") as images_list:
       for line in images_list:
         # image_name, label, _, _ = line.strip().split(" ")
+        # image_name, label = line.strip().split(" ")
         image_name = line.replace( '\n' , '' )
 
         trimaps_dir_path = os.path.join(annotations_dir_path)
 
         trimap_name = image_name + ".png"
         image_name += ".jpg"
-        label = int(1) - 1
+        # label = int(label) + 1
+        label = int(1) + 1
 
         record = {
             "image": os.path.join(images_dir_path, image_name),

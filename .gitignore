@@ -2,3 +2,4 @@ tensorflow_examples/
 *.lnk
 .vscode/
 model.png
+result/

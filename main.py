@@ -30,9 +30,9 @@ import os
 import datasets.my_dataset
 import datasets.my_dataset_voc2012
 
-# dataset, info = tfds.load('my_dataset', with_info=True, download=False)
-# dataset, info = tfds.load('my_dataset_voc2012', with_info=True)
-dataset, info = tfds.load('voc', with_info=True, download=True)
+# dataset, info = tfds.load('my_dataset', with_info=True)
+dataset, info = tfds.load('my_dataset_voc2012', with_info=True)
+# dataset, info = tfds.load('oxford_iiit_pet:3.*.*', with_info=True, download=True)
 
 dl_paths: dict = {
   "images" :      'D:\890_gitfork\labelme\labelme\examples\semantic_segmentation\data_dataset_voc\JPEGImages',
@@ -81,7 +81,8 @@ print('checkpoint 000')
 '''
 def normalize(input_image, input_mask):
   input_image = tf.cast(input_image, tf.float32) / 255.0
-  input_mask -= 1 # <-- this line chaged
+  # input_mask -= 1 # <-- this line chaged
+  input_mask /= 128 # <-- this line chaged
   return input_image, input_mask
 
 '''
@@ -122,7 +123,6 @@ def load_image_test(datapoint):
 ###------------------------------------------------------------------------------------
 ###------------------------------------------------------------------------------------
 
-# TRAIN_LENGTH = 3
 TRAIN_LENGTH = info.splits['train'].num_examples
 BATCH_SIZE = 64
 BUFFER_SIZE = 1000
@@ -155,7 +155,6 @@ def display(display_list):
 for image, mask in train.take(1):
   sample_image, sample_mask = image, mask
 
-
 print(type(sample_mask), sample_mask[64,:])
 display([sample_image, sample_mask])
 
@@ -177,7 +176,6 @@ layers = [base_model.get_layer(name).output for name in layer_names]
 down_stack = tf.keras.Model(inputs=base_model.input, outputs=layers)
 
 down_stack.trainable = False
-
 
 up_stack = [
     pix2pix.upsample(512, 3),  # 4x4 -> 8x8
@@ -228,8 +226,7 @@ def show_predictions(dataset=None, num=1):
       pred_mask = model.predict(image)
       display([image[0], mask[0], create_mask(pred_mask)])
   else:
-    display([sample_image, sample_mask,
-             create_mask(model.predict(sample_image[tf.newaxis, ...]))])
+    display([sample_image, sample_mask, create_mask(model.predict(sample_image[tf.newaxis, ...]))])
 
 # 学習前に予測させてみる
 show_predictions()
@@ -240,7 +237,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
     show_predictions()
     print ('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
-EPOCHS = 20
+EPOCHS = 20 # <-- this line changed
 VAL_SUBSPLITS = 5
 VALIDATION_STEPS = info.splits['test'].num_examples//BATCH_SIZE//VAL_SUBSPLITS
 

@@ -1,6 +1,4 @@
 """my_dataset dataset."""
-
-
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import glob
@@ -13,14 +11,11 @@ Description is **formatted** as markdown.
 It should also contain any processing which has been applied (if any),
 (e.g. corrupted example skipped, images cropped,...):
 """
-
 # TODO(my_dataset): BibTeX citation
 _CITATION = """
 """
 
-
 _NUM_SHARDS = 1
-
 
 class MyDataset(tfds.core.GeneratorBasedBuilder):
   """DatasetBuilder for my_dataset dataset."""
@@ -42,8 +37,8 @@ class MyDataset(tfds.core.GeneratorBasedBuilder):
         #     'label': tfds.features.ClassLabel(names=['no', 'yes']),
         # }),
         features=tfds.features.FeaturesDict({
-            "image": tfds.features.Image(),
-            "label": tfds.features.ClassLabel(num_classes=37),
+            "image": tfds.features.Image(shape=(None, None, 3)),
+            "label": tfds.features.ClassLabel(num_classes=2),
             "file_name": tfds.features.Text(),
             "segmentation_mask": tfds.features.Image(shape=(None, None, 1))
         }),
@@ -72,8 +67,8 @@ class MyDataset(tfds.core.GeneratorBasedBuilder):
     # TODO(my_dataset): Returns the Dict[split names, Iterator[Key, Example]]
     
     dl_paths: dict = {
-      "images" :      'D:\890_gitfork\labelme\labelme\examples\semantic_segmentation\data_dataset_voc\JPEGImages',
-      "annotations" :  "D:\890_gitfork\labelme\labelme\examples\semantic_segmentation\data_dataset_voc\SegmentationClassPNG",
+      "images" :      'D:\890_gitfork\labelme\labelme\examples\semantic_segmentation\mydata_dataset_voc\JPEGImages',
+      "annotations" :  "D:\890_gitfork\labelme\labelme\examples\semantic_segmentation\mydata_dataset_voc\SegmentationClassPNG",
     }
 
     images_path_dir: str = os.path.join(dl_paths["images"])
@@ -86,7 +81,7 @@ class MyDataset(tfds.core.GeneratorBasedBuilder):
         gen_kwargs={
             "images_dir_path": images_path_dir,
             "annotations_dir_path": annotations_path_dir,
-            "images_list_file": os.path.join(annotations_path_dir, "list.txt"),
+            "images_list_file": os.path.join(annotations_path_dir, "train.txt"),
             },
         )
     test_split = tfds.core.SplitGenerator(
@@ -95,7 +90,7 @@ class MyDataset(tfds.core.GeneratorBasedBuilder):
         gen_kwargs={
             "images_dir_path": images_path_dir,
             "annotations_dir_path": annotations_path_dir,
-            "images_list_file": os.path.join(annotations_path_dir, "list.txt")
+            "images_list_file": os.path.join(annotations_path_dir, "val.txt")
             },
         )
 
@@ -110,11 +105,13 @@ class MyDataset(tfds.core.GeneratorBasedBuilder):
   def _generate_examples(self, images_dir_path, annotations_dir_path, images_list_file):
     with tf.io.gfile.GFile(images_list_file, "r") as images_list:
       for line in images_list:
-        image_name, label, _, _ = line.strip().split(" ")
+        # image_name, label, _, _ = line.strip().split(" ")
+        image_name = line.replace( '\n' , '' )
 
         trimap_name = image_name + ".png"
         image_name += ".jpg"
-        label = int(label) - 1
+        # label = int(label) - 1
+        label = int(0)
 
         record = {
             "image": os.path.join(images_dir_path, image_name),
