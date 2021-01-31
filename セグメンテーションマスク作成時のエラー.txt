@@ -1,0 +1,9 @@
+Train for 57 steps, validate for 11 steps
+Epoch 1/20
+Corrupt JPEG data: 240 extraneous bytes before marker 0xd9
+Corrupt JPEG data: premature end of data segment
+
+Train for 22 steps, validate for 4 steps
+Epoch 1/20
+2021-01-31 18:32:32.464572: W tensorflow/core/framework/op_kernel.cc:1655] OP_REQUIRES failed at sparse_xent_op.cc:90 : Invalid argument: Received a label value of -1 which is outside the valid range of [0, 3).  Label values: -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
